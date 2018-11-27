@@ -2,11 +2,9 @@ import Layout from '../components/MyLayout.js'
 import Link from 'next/link'
 
 const PostLink = ({id, title}) => (
-  <li>
-    <Link as={`/n/${id}`} href={`/node?title=${title}`}>
-      <a>{title}</a>
-    </Link>
-  </li>
+  <Link as={`/n/${id}`} href={`/node?title=${title}`}>
+    <a>{title}</a>
+  </Link>
 )
 
 export default () => (
