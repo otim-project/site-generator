@@ -1,3 +1,5 @@
 .next
 node_modules
 *.log
+s3Creds.js
+out

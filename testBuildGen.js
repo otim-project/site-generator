@@ -4,5 +4,5 @@ run();
 
 async function run() {
     const exportPathMapResult = await exportPathMap();
-    console.log(exportPathMapResult)
+    console.log(JSON.stringify(exportPathMapResult, null, 4))
 }

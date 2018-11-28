@@ -5,15 +5,131 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
+const testData = {
+    "/": {
+        "page": "/index",
+        "query": {
+            "nodes": [
+                {
+                    "key": "toen-mastercourse",
+                    "repo": "jakebian/OTIM-toen-mastercourse"
+                }
+            ],
+            "contentMap": {
+                "toen-mastercourse": [
+                    {
+                        "title": "Lecture 1: Reflections on the notion of Space I",
+                        "path": "/chapters/lecture1.tex"
+                    },
+                    {
+                        "title": "Lecture 2: Reflections on the notion of Space II",
+                        "sub": [
+                            {
+                                "title": "1. Geometric contexts"
+                            },
+                            {
+                                "title": "2. Manifolds"
+                            },
+                            {
+                                "title": "3. Geometric spaces",
+                                "path": "/chapters/lecture2-3.tex"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Lecture 3: Schemes and algebraic spaces I"
+                    },
+                    {
+                        "title": "Lecture 4: Schemes and algebraic spaces II"
+                    },
+                    {
+                        "title": "Lecture 5: Stacks I"
+                    },
+                    {
+                        "title": "Lecture 6: Stacks II"
+                    },
+                    {
+                        "title": "Lecture 7: Stacks III"
+                    },
+                    {
+                        "title": "Lecture 8: Stacks IV"
+                    },
+                    {
+                        "title": "Some exercises"
+                    }
+                ]
+            }
+        }
+    },
+    "/node/toen-mastercourse": {
+        "page": "/nodePage",
+        "query": {
+            "config": {
+                "key": "toen-mastercourse",
+                "repo": "jakebian/OTIM-toen-mastercourse"
+            },
+            "content": [
+                {
+                    "title": "Lecture 1: Reflections on the notion of Space I",
+                    "path": "/chapters/lecture1.tex"
+                },
+                {
+                    "title": "Lecture 2: Reflections on the notion of Space II",
+                    "sub": [
+                        {
+                            "title": "1. Geometric contexts"
+                        },
+                        {
+                            "title": "2. Manifolds"
+                        },
+                        {
+                            "title": "3. Geometric spaces",
+                            "path": "/chapters/lecture2-3.tex"
+                        }
+                    ]
+                },
+                {
+                    "title": "Lecture 3: Schemes and algebraic spaces I"
+                },
+                {
+                    "title": "Lecture 4: Schemes and algebraic spaces II"
+                },
+                {
+                    "title": "Lecture 5: Stacks I"
+                },
+                {
+                    "title": "Lecture 6: Stacks II"
+                },
+                {
+                    "title": "Lecture 7: Stacks III"
+                },
+                {
+                    "title": "Lecture 8: Stacks IV"
+                },
+                {
+                    "title": "Some exercises"
+                }
+            ],
+            "staticDir": {
+                "/chapters/lecture1.tex": "toen-mastercourse/chapters/lecture1.pdf",
+                "/chapters/lecture2-3.tex": "toen-mastercourse/chapters/lecture2-3.pdf"
+            }
+        }
+    }
+};
+
 app.prepare()
 .then(() => {
   const server = express()
 
-  server.get('/node/:id', (req, res) => {
-    const actualPage = '/nodePage'
-    const queryParams = { title: req.params.id }
-    app.render(req, res, actualPage, queryParams)
-  })
+  Object.keys(testData).forEach(
+    pageId => server.get(`${pageId}`, (req, res) => {
+      const actualPage = '/nodePage'
+      const queryParams = testData[pageId];
+      app.render(req, res, actualPage, queryParams)
+    })
+
+  )
 
   server.get('*', (req, res) => {
     return handle(req, res)

@@ -1,24 +1,82 @@
 const octokit = require('@octokit/rest')()
 const yaml = require('js-yaml');
+const { accessKeyId, secretAccessKey, region, Bucket } = require('./s3creds');
+const s3 = require('s3');
+
+const s3Client = s3.createClient({
+  s3Options: {
+    accessKeyId,
+    secretAccessKey,
+    region,
+  },
+});
+
 
 module.exports = { getSiteConfig }
 
+getSiteConfig();
+
 async function getSiteConfig() {
     const config = await getConfig();
-    return formatSiteConfig(config);
+    const nodeToDir = downloadOutputs(config.contentMap);
+    return formatSiteConfig(config, nodeToDir, {
+        '/': {
+            page: '/index',
+            query: config
+        }
+    });
 }
 
-function formatSiteConfig({nodes, contentMap}) {
+function formatSiteConfig({nodes, contentMap}, nodeToDir, baseObj) {
     return nodes.reduce((result, config) => ({
         ...result,
-        [config.key]: {
-            page: `/node/${config.key}`,
+        [`/node/${config.key}`]: {
+            page: '/nodePage',
             query: {
                 config,
-                content: contentMap[config.key]
+                content: contentMap[config.key],
+                staticDir: nodeToDir[config.key],
             }
         }
-    }), {})
+    }), baseObj)
+}
+
+function downloadOutputs(contentsMap) {
+    const keyToOuputPaths = Object.keys(contentsMap)
+        .reduce((result, key) => ({
+            ...result,
+            [key]: getAllPaths(contentsMap[key])
+        }), {})
+    const nodeToFileKey = {}
+    Object.keys(keyToOuputPaths).forEach(
+        nodeKey => (
+            keyToOuputPaths[nodeKey].forEach(sourcePath => {
+                const Key = getFileKey(nodeKey, sourcePath);
+                nodeToFileKey[nodeKey] = nodeToFileKey[nodeKey] || {};
+                nodeToFileKey[nodeKey] = {
+                    ...nodeToFileKey[nodeKey],
+                    [sourcePath]: Key
+                }
+                const uploader = s3Client.downloadFile({
+                    localFile: `static/built/${Key}`,
+                    s3Params: { Bucket, Key },
+                });
+
+                uploader.on('error', function(err) {
+                  console.error(`unable to download ${Key}`, err.stack);
+                });
+                uploader.on('progress', function() {
+                    // future dev enhancement: add progress bar
+                });
+                uploader.on('end', () => console.log('downloaded', Key));
+            })
+        )
+    );
+    return nodeToFileKey;
+}
+
+function getFileKey(nodeKey, sourcePath) {
+    return `${nodeKey}/${getRemotePath(sourcePath)}`;
 }
 
 async function getConfig() {
@@ -65,8 +123,30 @@ function parseYamlConfig(rawFile) {
     return yaml.load(Buffer.from(rawFile, 'base64').toString());
 }
 
+function getRemotePath(sourcePath) {
+    return `${trimSlashes(strimExtension(sourcePath))}.pdf`;
+}
+
 function trimSlashes(s) {
     return s.replace(/^\/|\/$/g, '');
+}
+
+function getAllPaths(nodes) {
+    return nodes.reduce((result, {path, sub}) => {
+        if (sub) {
+            return [...result, ...getAllPaths(sub)]
+        }
+
+        if (path) {
+            return [...result, path];
+        }
+
+        return result
+    }, []);
+}
+
+function strimExtension(path) {
+    return path.split('.').slice(0, -1).join('.')
 }
 
 
