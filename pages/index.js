@@ -43,7 +43,14 @@ const NodeLink = ({ config }) => (
 
 export default ({ url: { query } }) => (
   <Layout>
-    <div className="columns">
+    <div>
+    <div className='home-header'>
+    <div className='header-img'>
+      <img src='/static/img/header-img.png'/>
+
+    </div>
+    </div>
+    <div className="columns books-container">
     {
         query.nodes.map(node => (
           <div className="column">
@@ -53,6 +60,19 @@ export default ({ url: { query } }) => (
     }
     </div>
 
+    <style jsx>{`
+        .header-img {
+          max-width: 500px;
+          margin: auto;
+          pointer-events: none;
+        }
+        .books-container {
+          padding-top: 30px;
+          padding-bottom: 150px;
+        }
+    `}</style>
+
+    </div>
   </Layout>
 )
 

@@ -4,16 +4,21 @@ const linkStyle = {
   marginRight: 15
 }
 
-const Header = () => (
+const Header = (props) => (
     <div>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.css"/>
 
         <div className='header-row'>
-        <div>OTIM</div>
+        <div className='otim-logo'>
+        <a href="/" style={linkStyle}>
+        <img src='/static/img/logo-transparent.png'/>
+        </a>
+
+        </div>
         <div className="otim-nav">
-        <a href="/" style={linkStyle}>Home</a>
+        <a className='github-link' href="https://github.com/otim-project/">github</a>
         <Link href="/about">
-          <a style={linkStyle}>About</a>
+          <a style={linkStyle}>about</a>
         </Link>
         </div>
         </div>
@@ -25,6 +30,16 @@ const Header = () => (
 
             .header-row {
                 height: 100px;
+            }
+
+            .otim-logo {
+                width: 80px;
+                height: 80px;
+                display: inline-block;
+                margin: 0 50px;
+            }
+            .github-link {
+                margin-right: 20px;
             }
         `}</style>
 
