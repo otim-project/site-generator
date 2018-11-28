@@ -1,6 +1,6 @@
 const octokit = require('@octokit/rest')()
 const yaml = require('js-yaml');
-const { accessKeyId, secretAccessKey, region, Bucket } = require('./s3creds');
+const { accessKeyId, secretAccessKey, region, Bucket } = getS3Creds();
 const s3 = require('s3');
 
 const s3Client = s3.createClient({
@@ -15,6 +15,16 @@ const s3Client = s3.createClient({
 module.exports = { getSiteConfig }
 
 getSiteConfig();
+
+function getS3Creds() {
+
+    return process.env.AWS_ENV ? {
+        accessKeyId: process.env.AWS_accessKeyId,
+        secretAccessKey: process.env.AWS_secretAccessKey,
+        region: process.env.AWS_region,
+        Bucket: process.env.AWS_Bucket,
+    } : require('./s3Creds');
+}
 
 async function getSiteConfig() {
     const config = await getConfig();
