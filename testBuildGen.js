@@ -1,8 +1,8 @@
-const { exportPathMap } = require('./next.config');
+// const { exportPathMap } = require('./next.config');
 
-run();
+// run();
 
-async function run() {
-    const exportPathMapResult = await exportPathMap();
-    console.log(JSON.stringify(exportPathMapResult, null, 4))
-}
+// async function run() {
+//     const exportPathMapResult = await exportPathMap();
+//     console.log(JSON.stringify(exportPathMapResult, null, 4))
+// }
