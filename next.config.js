@@ -1,8 +1,8 @@
-// const { getSiteConfig } = require('./meta')
+const { getSiteConfig } = require('./meta')
 
-// module.exports = {
-//   exportPathMap: async function () {
-//     const siteConfig = await getSiteConfig();
-//     return siteConfig;
-//   }
-// }
+module.exports = {
+  exportPathMap: async function () {
+    const siteConfig = await getSiteConfig();
+    return siteConfig;
+  }
+}

@@ -27,7 +27,7 @@ async function getSiteConfig() {
     });
 }
 
-function formatSiteConfig({nodes, contentMap}, nodeToDir, baseObj) {
+function formatSiteConfig({nodes, contentMap, metaMap}, nodeToDir, baseObj) {
     return nodes.reduce((result, config) => ({
         ...result,
         [`/node/${config.key}`]: {
@@ -35,6 +35,7 @@ function formatSiteConfig({nodes, contentMap}, nodeToDir, baseObj) {
             query: {
                 config,
                 content: contentMap[config.key],
+                meta: metaMap[config.key],
                 staticDir: nodeToDir[config.key],
             }
         }
@@ -82,10 +83,24 @@ function getFileKey(nodeKey, sourcePath) {
 async function getConfig() {
     const nodes = await getNodesConfig();
     const contentMap = await getContentMap(nodes);
+    const metaMap = await getMetaMap(nodes);
     return {
         nodes,
-        contentMap
+        contentMap,
+        metaMap
     }
+}
+
+
+async function getMetaMap(nodesConfig) {
+    return nodesConfig.reduce(async (result, {key, repo: nodeRepo }) => {
+        const [ owner, repo ] = trimSlashes(nodeRepo).split('/');
+        const nodeMeta = await getNodeMeta(owner, repo);
+        return {
+            ...result,
+            [key]: nodeMeta
+        };
+    }, {});
 }
 
 async function getContentMap(nodesConfig) {
@@ -106,6 +121,16 @@ async function getNodesConfig() {
         path: 'nodes.yaml',
         ref: 'master'
     });
+    return parseYamlConfig(result.data.content);
+}
+
+async function getNodeMeta(owner, repo) {
+    const result = await octokit.repos.getContents({
+        owner,
+        repo,
+        path: '.otim/meta.yaml',
+        ref: 'master'
+    })
     return parseYamlConfig(result.data.content);
 }
 

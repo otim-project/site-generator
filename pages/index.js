@@ -1,37 +1,40 @@
 import Layout from '../components/MyLayout.js'
 import Link from 'next/link'
 
-const NodeLink = ({ config }) => (console.log('yo', config) ||
+const linkStyle = {
+  padding: 20,
+  cursor: 'pointer'
+}
+
+const NodeLink = ({ config }) => (
   <Link as={`/node/${config.config.key}`} href={`/node?${serialize(config)}`}>
-    <a>Yo {config.config.key}</a>
+    <div style={linkStyle}>
+        <div>{config.meta.title}</div>
+        <div>{config.meta.author}</div>
+    </div>
   </Link>
 )
 
 export default ({ url: { query } }) => (
   <Layout>
     <h1>OTIM</h1>
-    <pre>
-{/*        {
-            JSON.stringify(query, null, 4)
-        }
-*/}    </pre>
     <div>
     {
-        query.query.nodes.map(node => (
-            <NodeLink config={getNodeConfig(node, query.query.contentMap)}/>
+        query.nodes.map(node => (
+            <NodeLink config={getNodeConfig(node, query)}/>
         ))
     }
     </div>
-    {JSON.stringify(query, null, 4)}
 
   </Layout>
 )
 
 
-function getNodeConfig(node, contentMap) {
+function getNodeConfig(node, { contentMap, metaMap }) {
     return {
         config: node,
         content: contentMap[node.key],
+        meta: metaMap[node.key],
     }
 }
 

@@ -58,6 +58,13 @@ const testData = {
                         "title": "Some exercises"
                     }
                 ]
+            },
+            "metaMap": {
+                "toen-mastercourse": {
+                    "title": "A master course on algebraic stacks",
+                    "author": "Bertrand Toën",
+                    "date": 2005
+                }
             }
         }
     },
@@ -110,6 +117,11 @@ const testData = {
                     "title": "Some exercises"
                 }
             ],
+            "meta": {
+                "title": "A master course on algebraic stacks",
+                "author": "Bertrand Toën",
+                "date": 2005
+            },
             "staticDir": {
                 "/chapters/lecture1.tex": "toen-mastercourse/chapters/lecture1.pdf",
                 "/chapters/lecture2-3.tex": "toen-mastercourse/chapters/lecture2-3.pdf"
@@ -124,8 +136,7 @@ app.prepare()
 
   Object.keys(testData).forEach(
     pageId => server.get(`${pageId}`, (req, res) => {
-      const queryParams = testData[pageId];
-      app.render(req, res, testData[pageId].page, queryParams)
+      app.render(req, res, testData[pageId].page, testData[pageId].query)
     })
 
   )
