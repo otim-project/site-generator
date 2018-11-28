@@ -124,9 +124,8 @@ app.prepare()
 
   Object.keys(testData).forEach(
     pageId => server.get(`${pageId}`, (req, res) => {
-      const actualPage = '/nodePage'
       const queryParams = testData[pageId];
-      app.render(req, res, actualPage, queryParams)
+      app.render(req, res, testData[pageId].page, queryParams)
     })
 
   )

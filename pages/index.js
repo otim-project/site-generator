@@ -1,8 +1,8 @@
 import Layout from '../components/MyLayout.js'
 import Link from 'next/link'
 
-const NodeLink = ({ config }) => (
-  <Link as={`/n/${config.config.key}`} href={`/node?${serialize(config)}`}>
+const NodeLink = ({ config }) => (console.log('yo', config) ||
+  <Link as={`/node/${config.config.key}`} href={`/node?${serialize(config)}`}>
     <a>Yo {config.config.key}</a>
   </Link>
 )
@@ -10,10 +10,15 @@ const NodeLink = ({ config }) => (
 export default ({ url: { query } }) => (
   <Layout>
     <h1>OTIM</h1>
+    <pre>
+{/*        {
+            JSON.stringify(query, null, 4)
+        }
+*/}    </pre>
     <div>
     {
-        query.nodes.map(node => (
-            <NodeLink config={getNodeConfig(node, query.contentMap)}/>
+        query.query.nodes.map(node => (
+            <NodeLink config={getNodeConfig(node, query.query.contentMap)}/>
         ))
     }
     </div>
