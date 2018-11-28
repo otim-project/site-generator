@@ -103,25 +103,28 @@ async function getConfig() {
 
 
 async function getMetaMap(nodesConfig) {
-    return nodesConfig.reduce(async (result, {key, repo: nodeRepo }) => {
+    return nodesConfig.reduce(async (resultPromise, {key, repo: nodeRepo }) => {
+        const result = await resultPromise;
         const [ owner, repo ] = trimSlashes(nodeRepo).split('/');
         const nodeMeta = await getNodeMeta(owner, repo);
         return {
             ...result,
             [key]: nodeMeta
         };
-    }, {});
+    }, Promise.resolve({}));
 }
 
 async function getContentMap(nodesConfig) {
-    return nodesConfig.reduce(async (result, {key, repo: nodeRepo }) => {
+    return nodesConfig.reduce(async (resultPromise, {key, repo: nodeRepo }) => {
+        const result = await resultPromise;
+
         const [ owner, repo ] = trimSlashes(nodeRepo).split('/');
         const nodeContent = await getNodeContent(owner, repo);
         return {
             ...result,
             [key]: nodeContent
         };
-    }, {});
+    }, Promise.resolve({}));
 }
 
 async function getNodesConfig() {
